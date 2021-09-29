@@ -62,38 +62,44 @@ router.put('/new', async (req, res, next) => {
   next(err);
 }
 });
-router.put('/:petId', (req, res, next) => {
-  const petId = req.params.petId;
-  const { species, name, age, gender } = req.body;
-
-  const pet = petsArray.find((x) => x._id == petId);
-  if (!pet) {
-    res.status(404).json({ error: 'Pet not found.' });
-  } else {
-    if (species != undefined) {
-      pet.species = species;
+router.put('/:petId', async (req, res, next) => {
+  try {
+    const petId = dbmodule.newId(req.params.petId);
+    const { species, name, age, gender } = req.body;
+    const pet = await dbmodule.findPetById(petId);
+    if(!pet) {
+      res.status(404).json({ error: 'Pet not found.' });
+    } else {
+      if (name) {
+        await dbmodule.updatePetName(petId, name);
+      }
+      if (species) {
+        await dbmodule.updatePetSpecies(petId, species);
+      }
+      if (age) {
+        await dbmodule.updatePetAge(petId, age);
+      }
+      if (gender) {
+        await dbmodule.updatePetGender(petId, gender);
+      }
+      res.json({message: 'Pet Updated'});
     }
-    if (name != undefined) {
-      pet.name = name;
-    }
-    if (age != undefined) {
-      pet.age = parseInt(age);
-    }
-    if (gender != undefined) {
-      pet.gender = gender;
-    }
-    pet.lastUpdated = new Date();
-    res.json(pet);
+  } catch (err) {
+    next(err);
   }
 });
-router.delete('/:petId', (req, res, next) => {
-  const petId = req.params.petId;
-  const index = petsArray.findIndex((x) => x._id == petId);
-  if (index < 0) {
-    res.status(404).json({ error: 'Pet not found.' });
-  } else {
-    petsArray.splice(index, 1);
-    res.json({ message: 'Pet deleted.' });
+router.delete('/:petId', async (req, res, next) => {
+  try {
+    const petId = dbmodule.newId(req.params.petId);
+    const pet = await dbmodule.findPetById(petId);
+    if(!pet) {
+      res.status(404).json({ error: 'Pet not found.' });
+    } else {
+      await dbmodule.deletePetById(petId);
+      res.json({message:`${pet.name} Deleted`});
+    }
+  } catch (err) {
+    next(err);
   }
 });
 

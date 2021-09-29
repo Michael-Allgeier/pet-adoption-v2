@@ -55,6 +55,45 @@ async function insertOnePet(pet) {
   db.collection('pets').insertOne(pet);
 }
 
+async function updatePetName(petId, petName) {
+  const db = await connect();  
+  await db.collection('pets').updateOne(
+    { _id: { $eq: petId } },
+    { $set: { name: petName } } 
+  );
+}
+
+async function updatePetSpecies(petId, petSpecies) {
+  const db = await connect();  
+  await db.collection('pets').updateOne(
+    { _id: { $eq: petId } },
+    { $set: { species: petSpecies } } 
+  );
+}
+
+async function updatePetAge(petId, petAge) {
+  const db = await connect();  
+  await db.collection('pets').updateOne(
+    { _id: { $eq: petId } },
+    { $set: { age: petAge } } 
+  );
+}
+
+async function updatePetGender(petId, petGender) {
+  const db = await connect();  
+  await db.collection('pets').updateOne(
+    { _id: { $eq: petId } },
+    { $set: { gender: petGender } } 
+  );
+}
+
+async function deletePetById(petId) {
+  const db = await connect();
+  await db.collection('pets').deleteOne(
+    { _id: { $eq: petId } }
+  );
+}
+
 // export functions
 module.exports = {
   connect,
@@ -62,6 +101,11 @@ module.exports = {
   newId,
   findAllPets,
   findPetById,
-  insertOnePet
+  insertOnePet,
+  updatePetName,
+  updatePetSpecies,
+  updatePetAge,
+  updatePetGender,
+  deletePetById
   // FIXME: remember to export your functions
 };
